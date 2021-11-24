@@ -1,13 +1,21 @@
 from dataset_util import *
 from cbp_cnn import DB_CNN
+import torchvision.transforms as transforms
 import torchvision
+import matplotlib.pyplot as plt
+import numpy as np
 class PREDICT_UTIL:
-    def __init__(self, MODEL_PATH, S_CNN_PATH):
-        self.model_path = MODEL_PATH
-        self.s_cnn_path = S_CNN_PATH
+    def __init__(self, model_path, s_cnn_path):
+        self.model_path = model_path
+        self.s_cnn_path = s_cnn_path
+        self.device = get_default_device()
+        self.invTrans = transforms.Compose([transforms.Normalize(mean = [ 0., 0., 0. ],
+                                                     std = [ 1/0.229, 1/0.224, 1/0.225 ]),
+                                            transforms.Normalize(mean = [ -0.485, -0.456, -0.406 ],
+                                                     std = [ 1., 1., 1. ]),
+                                            ])
     
     def load_model(self):
-        self.device = get_default_device()
         self.model = DB_CNN(device=self.device, options=False, model_path=self.s_cnn_path).to(self.device)
         self.model.load_state_dict(torch.load(self.model_path))
 
@@ -57,7 +65,10 @@ class PREDICT_UTIL:
             torch.cuda.empty_cache()
             xb = to_device(img.unsqueeze(0), self.device)
             yb = self.model(xb)
-            print(yb.item()) 
+            print(yb.item())
+            npimg = self.invTrans(img).cpu().numpy()
+            plt.imshow(np.transpose(npimg, (1, 2, 0)))
+
             return yb
 
         
