@@ -68,7 +68,6 @@ class PREDICT_UTIL:
             print(yb.item())
             npimg = self.invTrans(img).cpu().numpy()
             plt.imshow(np.transpose(npimg, (1, 2, 0)))
-
             return yb
 
         
