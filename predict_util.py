@@ -1,5 +1,5 @@
 from dataset_util import *
-from cbp_cnn import DB_CNN
+from cbp_cnn import *
 import torchvision.transforms as transforms
 import torchvision
 import matplotlib.pyplot as plt
@@ -17,7 +17,7 @@ class PREDICT_UTIL:
     
     def load_model(self):
         self.model = DB_CNN(device=self.device, options=False, model_path=self.s_cnn_path).to(self.device)
-        self.model.load_state_dict(torch.load(self.model_path))
+        self.model.load_state_dict(torch.load(self.model_path, map_location=torch.device(self.device)))
 
     def gen_skin_img(self, img, crop_shape = (448, 448)):
     # print(img.size)
@@ -62,13 +62,14 @@ class PREDICT_UTIL:
         with torch.no_grad():
             self.model.eval()
             img = self.gen_skin_img(Image.open(IMG_PATH).convert('RGB'))
+
             torch.cuda.empty_cache()
             xb = to_device(img.unsqueeze(0), self.device)
             yb = self.model(xb)
-            print(yb.item())
+            # print(yb.item())
             npimg = self.invTrans(img).cpu().numpy()
             plt.imshow(np.transpose(npimg, (1, 2, 0)))
-            return yb
+            return yb.item()
 
         
     

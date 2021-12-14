@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
-from s_cnn import S_CNN
-from compact_bilinear_pooling import CompactBilinearPooling
+from s_cnn import *
+from compact_bilinear_pooling import *
 
 class ImageRegression(nn.Module):
     def training_step(self, batch):
@@ -36,15 +36,16 @@ class ImageRegression(nn.Module):
             epoch, result['srcc_train'], result['plcc_train'], result['srcc_val'], result['plcc_val'], result['train_loss'], result['val_loss']))
 
 class DB_CNN(ImageRegression):
-    def __init__(self, device, options=True, dropout_ratio=0.2, model_path="/content/drive/My Drive/Image_data/revised_model_13_10_2021_0.pth"):
+    def __init__(self, device, options=True, dropout_ratio=0.2, model_path="revised_model_13_10_2021_0.pth"):
         super().__init__()
         s_cnn = S_CNN(3, 27).to(device)
-        s_cnn.load_state_dict(torch.load(model_path))
+        # s_cnn.load_state_dict(torch.load(model_path))
+        s_cnn.load_state_dict(torch.load(model_path, map_location=torch.device(device)))
         vgg16 = torchvision.models.vgg16_bn(pretrained=True)
         self.synth_extractor = torch.nn.Sequential(*(list(s_cnn.children())[:-7]))
         self.auth_extractor = torch.nn.Sequential(*(list(vgg16.children())[0][:-1]))
         
-        self.compact_bilinear_pooling = CompactBilinearPooling(128*28*28, 512*28*28, 128*512).cuda()
+        self.compact_bilinear_pooling = CompactBilinearPooling(128*28*28, 512*28*28, 128*512).to(device)
         self.flatten = torch.nn.Flatten()
         self.activation = torch.nn.Sigmoid()
         self.dropout = nn.Dropout(dropout_ratio)

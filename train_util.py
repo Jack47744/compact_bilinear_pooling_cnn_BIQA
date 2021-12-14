@@ -2,7 +2,7 @@ import torch
 from scipy import stats
 import torch.nn as nn
 import matplotlib.pyplot as plt
-from cbp_cnn import DB_CNN
+from cbp_cnn import *
 from dataset_util import *
 
 @torch.no_grad()
@@ -93,7 +93,7 @@ def train_process(freeze, epochs, max_lr, grad_clip, weight_decay, opt_func, tra
                                            weight_decay=weight_decay, 
                                            opt_func=opt_func)
     history += histoty_tmp
-    model2 = DB_CNN(options=freeze).to(device)
+    model2 = DB_CNN(options=freeze, device=device).to(device)
     model2.load_state_dict(torch.load(save_path))
     return history, model, model2
 
