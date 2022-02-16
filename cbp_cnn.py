@@ -6,6 +6,14 @@ from s_cnn import *
 from compact_bilinear_pooling import *
 
 class ImageRegression(nn.Module):
+    """
+    A based class which will be used for creating the Compact Bilinear Pooling CNN
+
+    Methods
+    -------
+    training_step(batch)
+        
+    """
     def training_step(self, batch):
         images, mos_scores = batch 
         out = self(images)                  # Generate predictions

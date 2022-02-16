@@ -149,3 +149,5 @@ def get_result(model, test, transform, device):
     print('srcc:', test_srcc, 'plcc:', test_plcc)
     plt.show()
     return test_srcc, test_plcc
+
+
