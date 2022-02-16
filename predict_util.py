@@ -82,7 +82,7 @@ class PREDICT_UTIL:
             yb = self.model(xb)
             # print(yb.item())
             npimg = self.invTrans(img).cpu().numpy()
-            plt.imshow(np.transpose(npimg, (1, 2, 0)))
+            # plt.imshow(np.transpose(npimg, (1, 2, 0)))
             return yb.item()
 
         
