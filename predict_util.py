@@ -72,6 +72,7 @@ class PREDICT_UTIL:
             return yb.item()
     
     def predict_img_2(self, img):
+        
         with torch.no_grad():
             self.model.eval()
             torch.cuda.empty_cache()

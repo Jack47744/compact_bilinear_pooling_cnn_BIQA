@@ -150,4 +150,4 @@ def get_result(model, test, transform, device):
     plt.show()
     return test_srcc, test_plcc
 
-s
+
