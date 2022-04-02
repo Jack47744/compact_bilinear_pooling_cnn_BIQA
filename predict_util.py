@@ -4,6 +4,11 @@ import torchvision.transforms as transforms
 import torchvision
 import matplotlib.pyplot as plt
 import numpy as np
+
+import logging
+
+
+
 class PREDICT_UTIL:
     def __init__(self, model_path: str, s_cnn_path: str):
         self.model_path = model_path
@@ -14,10 +19,23 @@ class PREDICT_UTIL:
                                             transforms.Normalize(mean = [ -0.485, -0.456, -0.406 ],
                                                      std = [ 1., 1., 1. ]),
                                             ])
+        logger = logging.getLogger('PREDICT_UTIL')
+        logger.setLevel(logging.DEBUG)
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
+        self.logger = logger
     
     def load_model(self):
-        self.model = DB_CNN(device=self.device, options=False, model_path=self.s_cnn_path).to(self.device)
-        self.model.load_state_dict(torch.load(self.model_path, map_location=torch.device(self.device)))
+        try:
+            self.model = DB_CNN(device=self.device, options=False, model_path=self.s_cnn_path).to(self.device)
+            self.model.load_state_dict(torch.load(self.model_path, map_location=torch.device(self.device)))
+            self.logger.info('Load model complete')
+        except:
+            self.logger.warning('Cannot load model')
+        
 
     def gen_skin_img(self, img, crop_shape = (448, 448)):
     # print(img.size)
@@ -33,10 +51,6 @@ class PREDICT_UTIL:
                                                     std=(0.229, 0.224, 0.225))])
             return transform_test2(img)
         elif height > width:
-        # new_width = 1.2*crop_x
-        # h/h2 = w/w2 -> h2 = (w2/w)*h
-        # w2 = 1.2*crop_x
-        # new_height = height 
             new_width = 1*crop_x
             new_heigth = (new_width/width)*height
             # print(new_width, new_heigth)
