@@ -3,6 +3,7 @@ from PIL import Image
 from torch.utils.data.dataloader import DataLoader
 from torch.utils.data import random_split
 
+
 def get_default_device():
     """Pick GPU if available, else CPU"""
     if torch.cuda.is_available():

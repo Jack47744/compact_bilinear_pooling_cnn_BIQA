@@ -4,6 +4,7 @@ import torchvision.transforms as transforms
 import torchvision
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 
 import logging
 
@@ -11,6 +12,12 @@ import logging
 
 class PREDICT_UTIL:
     def __init__(self, model_path: str, s_cnn_path: str):
+        """The inference utility class that provides the prediction of the given image
+
+        Args:
+            model_path (str): The path of the model
+            s_cnn_path (str): The path of the SCNN model
+        """
         self.model_path = model_path
         self.s_cnn_path = s_cnn_path
         self.device = get_default_device()
@@ -29,16 +36,21 @@ class PREDICT_UTIL:
         self.logger = logger
     
     def load_model(self):
+        """Loading the model into memory
+        """
         try:
+            start_time = time.time()
+            self.logger.info(f'start loading model')
             self.model = DB_CNN(device=self.device, options=False, model_path=self.s_cnn_path).to(self.device)
             self.model.load_state_dict(torch.load(self.model_path, map_location=torch.device(self.device)))
-            self.logger.info('Load model complete')
+            self.logger.info(f'Load model complete using {time.time()-start_time} seconds')
         except:
             self.logger.warning('Cannot load model')
         
 
     def gen_skin_img(self, img, crop_shape = (448, 448)):
-    # print(img.size)
+
+    
         width, height = img.size
         crop_y = crop_shape[0]
         crop_x = crop_shape[1]
@@ -86,7 +98,8 @@ class PREDICT_UTIL:
             return yb.item()
     
     def predict_img_2(self, img):
-        
+        start_time = time.time()
+        self.logger.info('Start predict')
         with torch.no_grad():
             self.model.eval()
             torch.cuda.empty_cache()
@@ -98,6 +111,7 @@ class PREDICT_UTIL:
             # print(yb.item())
             npimg = self.invTrans(img).cpu().numpy()
             # plt.imshow(np.transpose(npimg, (1, 2, 0)))
+            self.logger.info(f'Predict finish using {time.time() - start_time} seconds')
             return yb.item()
 
         

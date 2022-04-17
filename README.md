@@ -13,3 +13,8 @@ Then run this command
 ```bash
 python3 predict_test.py
 ```
+
+To run the prediction server, run this command 
+```bash
+python3 server.py
+```
