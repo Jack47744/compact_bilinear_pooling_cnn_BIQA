@@ -103,16 +103,13 @@ class PREDICT_UTIL:
         with torch.no_grad():
             self.model.eval()
             torch.cuda.empty_cache()
-            # print(img)
             img = self.gen_skin_img(img)
-            
             xb = to_device(img.unsqueeze(0), self.device)
             yb = self.model(xb)
-            # print(yb.item())
-            npimg = self.invTrans(img).cpu().numpy()
-            # plt.imshow(np.transpose(npimg, (1, 2, 0)))
             self.logger.info(f'Predict finish using {time.time() - start_time} seconds')
-            return yb.item()
+            image_score = yb.item()
+            self.logger.info(f'Image score is {image_score}')
+            return image_score
 
         
     
