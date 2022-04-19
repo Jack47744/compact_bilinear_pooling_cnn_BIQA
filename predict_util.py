@@ -52,6 +52,11 @@ class PREDICT_UTIL:
 
     
         width, height = img.size
+        # print(img.mode)
+        if img.mode == 'RGBA':
+            background = Image.new("RGB", img.size, (255, 255, 255))
+            background.paste(img, mask=img.split()[3])
+            img = background
         crop_y = crop_shape[0]
         crop_x = crop_shape[1]
         img_list = []
@@ -88,6 +93,7 @@ class PREDICT_UTIL:
         with torch.no_grad():
             self.model.eval()
             img = self.gen_skin_img(Image.open(IMG_PATH).convert('RGB'))
+            
 
             torch.cuda.empty_cache()
             xb = to_device(img.unsqueeze(0), self.device)
@@ -100,6 +106,8 @@ class PREDICT_UTIL:
     def predict_img_2(self, img):
         start_time = time.time()
         self.logger.info('Start predict')
+        # print(img.size)
+        
         with torch.no_grad():
             self.model.eval()
             torch.cuda.empty_cache()
@@ -110,6 +118,7 @@ class PREDICT_UTIL:
             image_score = yb.item()
             self.logger.info(f'Image score is {image_score}')
             return image_score
+        
 
         
     

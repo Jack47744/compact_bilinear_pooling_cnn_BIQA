@@ -6,7 +6,7 @@ import ssl
 from io import BytesIO
 import logging
 
-logger = logging.getLogger('PREDICT_UTIL')
+logger = logging.getLogger('server')
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
@@ -21,6 +21,7 @@ S_CNN_PATH = 'revised_model_13_10_2021_0.pth'
 MODEL_PATH = 'db_cnn_v2_challenge.pth'
 Predict = PREDICT_UTIL(model_path=MODEL_PATH, s_cnn_path=S_CNN_PATH)
 Predict.load_model()
+
 
 app = FastAPI()
 
