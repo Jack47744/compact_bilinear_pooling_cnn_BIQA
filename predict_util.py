@@ -56,6 +56,10 @@ class PREDICT_UTIL:
     def gen_skin_img(self, img, crop_shape=(448, 448)):
 
         width, height = img.size
+        if img.mode == 'RGBA':
+            background = Image.new("RGB", img.size, (255, 255, 255))
+            background.paste(img, mask=img.split()[3])
+            img = background
         crop_y = crop_shape[0]
         crop_x = crop_shape[1]
         img_list = []
