@@ -1,11 +1,23 @@
-FROM python:3.9
+FROM python:3.9-slim AS compile-image
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends build-essential gcc
 
-WORKDIR /code
+WORKDIR /opt/venv
 
-COPY ./requirements.txt /code/requirements.txt
+RUN python -m venv /opt/venv
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+ENV PATH="/opt/venv/bin:$PATH"
 
-COPY . /code
+COPY ./requirements.txt /opt/venv
+RUN pip install -r requirements.txt
+
+COPY . .
+
+FROM python:3.9-slim AS build-image
+COPY --from=compile-image /opt/venv /opt/venv
+
+WORKDIR /opt/venv
+
+ENV PATH="/opt/venv/bin:$PATH"
 
 CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8600"]
